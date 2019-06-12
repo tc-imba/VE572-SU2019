@@ -8,15 +8,13 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import com.ve572.p1.preprocess.avro.MillionSong;
+import com.ve572.p1.preprocess.CheckSum;
 import org.apache.avro.file.CodecFactory;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumWriter;
-import org.apache.commons.codec.binary.Hex;
 
 public class CompactSmallFiles {
 
@@ -29,7 +27,6 @@ public class CompactSmallFiles {
             dataFileWriter.setCodec(CodecFactory.snappyCodec());
             dataFileWriter.create(new MillionSong().getSchema(), new File(avroName));
 
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
             Path directory = Paths.get(mainDirectory, subDirectory);
             Path prefixPath = Paths.get(subDirectory);
 
@@ -46,9 +43,7 @@ public class CompactSmallFiles {
                     ByteBuffer buffer = ByteBuffer.wrap(bytes);
                     millionSong.setFilecontent(buffer);
                     // set sha-1
-                    digest.reset();
-                    digest.update(bytes);
-                    String checksum = Hex.encodeHexString(digest.digest()).toUpperCase();
+                    String checksum = CheckSum.getSHA1(bytes);
                     millionSong.setChecksum(checksum);
                     System.out.println(filename + ' ' + checksum);
                     dataFileWriter.append(millionSong);
@@ -60,7 +55,7 @@ public class CompactSmallFiles {
             });
             dataFileWriter.close();
 
-        } catch (NullPointerException | IOException | NoSuchAlgorithmException e) {
+        } catch (NullPointerException | IOException  e) {
             e.printStackTrace();
         }
 
