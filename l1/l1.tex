@@ -2,14 +2,16 @@
 
 \usepackage{tadoc}
 
-%\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage{xcolor}
 %\usepackage{graphicx}
+
 
 \usepackage{minted}
 \usemintedstyle{autumn}
-\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
-%\usepackage{framed}
+%\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+
+\usepackage{dirtree}
 
 %\renewcommand{\multirowsetup}{\centering} 
 
@@ -18,7 +20,7 @@
 
 \title{VE572 --- Methods and Tools for Big Data}
 \subtitle{Lab 1}
-\author{\href{mailto:liuyh615@sjtu.edu.cn}{Yihao Liu}}
+\author{\href{mailto:liuyh615@sjtu.edu.cn}{Yihao} and \href{mailto:AuroraZYJ@sjtu.edu.cn}{Yanjun}}
 \semester{Summer}
 \year{2019}
 \blockinfo{
@@ -26,7 +28,8 @@
 		\textbf{Goals of the lab}
 	\end{center}	
 	\begin{itemize}\itemsep .25cm
-		\item Basic file input / output in Java
+	    \item Write and use packages in Java
+		\item File input and output in Java
 		\item Object-oriented programming in Java
 	\end{itemize}	 
 }
@@ -42,15 +45,280 @@
 
 \section{Introduction}
 
-This lab requires you a strong background of C++ programming and helps you to turn it into the ability of Java programming. A simple guide can be found in the appendix \hyperlink{cpp2java}{cpp2java}.
+\begin{center}\em In this lab we assume a good C++ background and help you turning it into the ability of Java programming. A simple guideline can be found in the appendix~\ref{cpp2java}.
+\end{center}
 
-...
+Your friend Reapor Rich plans to build a new type of cinema in Singapore. The seats are assigned automatically by a seat management system when customers buy tickets. The structure of a typical cinema hall is shown on figure~\ref{fig:cinema}, and we can observe that three seats are selected. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{cinema.png}
+    \caption{Structure of a typical cinema hall.}
+    \label{fig:cinema}
+\end{figure}
+
+When people choose their seat they always want to stay together and prefer the seats in the middle and back of the cinema.  In figure~\ref{fig:cinema}, your other friends, Krystor, Frank, and Simon selected the three best seats in the hall. \medskip
+
+According to this golden rule, the management system will assign the seats within the following rules:
+
+\begin{itemize}
+    \item When a customer wants to buy $n$ tickets, the system always selects $n$ consecutive seats on a row. The seats are ``consecutive'' means that they are next to each on the same row.
+    \item The system always selects the seats closest to the middle back of the cinema hall. It means that the distance between the centroid of the seats and the middle back point (row 8, column between 6 and 7 on figure \ref{fig:cinema}) should be minimized.
+    \item When two selections on different rows have the same distance, choose the row with the larger row number.
+    \item When two different selections on one row have the same distance, choose the centroid on the left.
+    \item If no selection satisfies the rules above, deny the customer's request of buying tickets.
+\end{itemize}
+
+For example  on figure~\ref{fig:cinema}, as the centroid is $(8,6)$, and the middle back point $(8, 6.5)$,then the distance is $0.5$, which is the smallest in all selections. \medskip
+
+{\em Hint:} you are not recommended to use square root when comparing the distance, as it may lose some accuracy. This also applies to the  analysis of big data composed of integers.
+
+\section{Java environment setup}
+
+In this section we install the Java environment and learn how to create and install basic Java packages.
+
+\subsection{Installation}
+
+First you need a Java SDK (Java Software Development Kit, or JDK) installed on your system. There are two implementations for Java platform programming: Oracle JDK (preferred), the official Oracle version of Java Development Kit; and OpenJDK  a free and open-source implementation of the Java SE Platform Edition. For this course, you should install Java 8 or above.
+
+\subsubsection{Windows}
+Windows is {\bf not recommended} in this course. If you really want to use Java on Windows,  download Oracle JDK from \url{https://www.oracle.com/technetwork/java/javase/downloads/index.html} and run the installer.
+
+\subsubsection{Linux}
+\begin{itemize}
+	\item Debian and derived distribution, e.g. Ubuntu, Linux Mint.
+\begin{shbox}
+apt-get update
+apt-get install software-properties-common
+add-apt-repository <repository>
+apt-get update
+apt-get install oracle-java<X>-installer
+\end{shbox}
+Replace {\tt <repository>} with a third-party repository, and {\tt <X>} with the version number.  Third-party repositories can be found at~\url{https://launchpad.net/}, e.g. Java 8: {\tt ppa:webupd8team/java}, or Java 12: {\tt ppa:linuxuprising/java}\footnote{Reference:~\url{https://www.linuxuprising.com/2019/03/how-to-install-oracle-java-12-jdk-12-in.html}.}.
+   
+	 \item Arch Linux and derived distributions, e.g. Manjaro: first install {yay}.
+\begin{shbox}
+sudo pacman -S git
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+\end{shbox}
+    Display all available Oracle JDK and JRE versions and select whichever you want.
+\begin{shbox}
+sudo pacman -Syyu
+yay jdk
+\end{shbox}
+		\item Other: use a proper search engine and share your findings such that we can update this guide. %You can find information for installation on other linux system on Google.
+\end{itemize}
+
+\subsubsection{Mac OS}
+Download Oracle JDK from~\url{https://www.oracle.com/technetwork/java/javase/downloads/index.html} and run the installer.
+
+\subsection{Java package creation}
+
+In this part, you need to create a simple Java command line program. Different from C++, Java programs are managed in packages, for example, for this lab, a typical package structure is as follows.
+
+\dirtree{%
+	.1 Current directory.
+	.2 com. 
+	.3 ve572.
+	.4 l1.
+	.5 Main.java.
+}
+\medskip
+
+Content of \texttt{Main.java}\footnote{Reference: \url{https://docs.oracle.com/javase/tutorial/java/package/namingpkgs.html}.}.
+
+\begin{inlinecbox}{java}
+package com.ve572.l1;
+
+public class Main {
+
+    public static void main(String[] args) {
+        // write your code here
+    }
+}
+\end{inlinecbox}
+
+\subsection{Third-party package installation}
+
+The built-in support for third-party packages is one of the most fascinating features of Java compared to C++. The \texttt{org.apache.commons.cli} package is used in this lab to parse command line arguments. It is also the {\tt cli} parser of  \textit{Hadoop}, which will be used in future labs.
+
+There are two ways to install packages: direct install or through a package manager, such as \texttt{maven}. We recommend you to latter option.
+
+\subsubsection{Direct package installation}
+
+If you use common IDEs, e.g. Eclipse or Intellij Idea, you can manually add third-party libraries. First, download the binary file of the third-party libraries. Apache Commons CLI can be downloaded from~\url{http://commons.apache.org/proper/commons-cli/download_cli.cgi}. Then add {\tt *.jar} to your modules in the modules settings. 
+
+To include third-party libraries using the command line.
+\begin{shbox}
+javac -classpath <path_to_libraries> <path_to_program>
+\end{shbox}
+
+Replace {\tt <path\_to\_libraries>} with your own path to the third party libraries and {\tt <path\_to\_program>} with your program. For more information refer to~\url{https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html}.
 
 
+\subsubsection{Maven package installation}
+
+Most IDEs, e.g Eclipse or Intellij Idea, officially support \texttt{maven}. Upon creating a maven project, a \texttt{pom.xml} file is generated. You can add dependencies and define the JDK version to use.\smallskip
+
+\filecbox[\footnotesize]{xml}{pom.xml}
+
+For more information on how to  use maven from the command line refer to \url{https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html}.
+
+\section{Java programming}
+
+Now that is environment is ready we start solving our initial problem using a Java program.
+
+\subsection{Command Line Arguments}\label{cli}
+
+Import the \texttt{org.apache.commons.cli} package\footnote{Reference: \url{https://commons.apache.org/proper/commons-cli/}.}. 
+\begin{inlinecbox}{java}
+import org.apache.commons.cli.*;
+\end{inlinecbox}
+
+This package provides several useful classes such as \texttt{Options}, \texttt{CommandLineParser}, and \texttt{HelpFormatter}.
+
+\subsubsection*{Task}
+
+Use them to write a command line program which takes two normal arguments (\mintinline{shell}{--hall} and \mintinline{shell}{--query}), as well as a help argument (\mintinline{shell}{-h/--help}).
+
+When one of the two arguments is missing, or \mintinline{shell}{-h/--help} is used, output a help information generated by \texttt{HelpFormatter}. The format is
+\begin{inlinecbox}{shell}
+usage: cinema
+ -h,--help          print this message
+    --hall <arg>    path of the hall config directory
+    --query <arg>   query of customer orders
+\end{inlinecbox}
 
 
-\section{Appendix}
-\hypertarget{cpp2java}{\ }
-\includepdf{cpp2java.pdf}
+\subsection{Configuration files}
+
+The information about the halls in the cinema is stored in a configuration directory specified using the {\tt --hall} flag~(section~\ref{cli}). This directory contains several files but the their names are not fixed.
+
+Write a class \texttt{Hall} which reads a cinema hall configuration files and saves all of the information as attributes. It is recommended to use a two-dimension \texttt{List<Boolean>} to store the seats.
+
+Format of a cinema hall configuration file.
+\begin{itemize}
+\item Hall name: unique, on the first line;
+\item Movie name: not unique, on the second line;
+\item $m$ boolean values on each of the following $n$ lines: a location with a seat shows a 1 and a 0 otherwise; $m$ is the maximum length over all the rows;
+\item Center line: between column $m/2$ and $m/2+1$, if $m$ is even and on column $(m+1)/2$, otherwise; The column number starts at 1;
+\end{itemize}
+
+
+\subsubsection*{Task}
+Write a class \texttt{Cinera} which parses the configuration files in the directory, using the \texttt{--Hall} flag, and saves the information as attributes. It is recommended to use a \texttt{HashMap<String, Hall>} to store the mapping between hall names and \texttt{Hall}s, and a \texttt{HashMap<String, List<Hall>>} to store the mapping between movie names and \texttt{Hall}s.
+
+\subsubsection*{Example}
+A valid configuration file looks as follows.Note that spaces are allowed in the hall and movie names.
+
+\inputminted{shell}{hall/1.txt}
+\subsection{Answer queries}
+
+The tickets purchase requests are stored in a query file defined using the command line argument {\tt --query}~(section~\ref{cli}). The format of each line composing the query file is
+\begin{minted}{shell}
+customer name,movie name,ticket number n
+\end{minted}
+
+We assure $n>0$, and no comma ``,'' in the customer and movie names. However spaces are allowed. Omit all trailing spaces around a comma.
+
+\subsubsection*{Task}
+Read the file line by line and answer each query to \texttt{stdout} using the following format:
+\begin{minted}{shell}
+customer name,movie name,hall name,row number,column number 1,...,column number n
+\end{minted}
+
+First assign customers to halls, sorted in alphabetical order; start with the first hall. If no seats can be assigned, or the movie cannot be found, then only print the customer's name and movie.\medskip  
+
+{\em Warning:} do not print any unnecessary spaces, or some tests might fail on JOJ.\medskip 
+
+\subsubsection*{Example}
+For the input file,
+\begin{verbatim}
+Krystor He , The Wandering Earth, 3
+Manuel,The Wandering Earth,20
+Jing,unknown,1
+\end{verbatim}
+
+The output should be
+\begin{verbatim}
+Krystor He,The Wandering Earth,apple,8,5,6,7
+Manuel,The Wandering Earth
+Jing,unknown
+\end{verbatim}
+
+\section{JOJ submissions}
+
+Compress your source code into a \texttt{tar} or \texttt{zip} archive following the structure below. Then submit it on JOJ (\url{https://joj.sjtu.edu.cn}).
+\dirtree{%
+	.0 .
+	.1 com.
+  .2 ve572.
+  .3 l1.
+  .4 Cinema.java.
+  .4 Hall.java.
+  .4 Main.java.
+}\medskip
+
+{\em Note:} only the correctness of the implementation will be checked, i.e. its efficiency will not be evaluated.
+
+\appendix 
+\section{The C++ Hitchhiker's Guide to the Javanian Galaxy}
+\label{cpp2java}
+
+	{\em Java is a compiled language, yet it runs on the Java Virtual Machine (JVM).}
+
+		Java programs need to be compiled and run on a runtime called Java Runtime Environment (JRE). The Java development environment requires a package called Java Development Kit (JDK).\medskip
+
+	{\em Java is fully object-oriented.}
+
+Java programs are organized in terms of classes. All variables
+or functions must reside within the scope of a class. All classes
+always inherit a common base class ``Object''.\medskip
+
+{\em  The Java memory management features a garbage collector.}
+
+Object are automatically deleted and recycled when no longer needed.
+ However, in some cases,
+you have to pay a significant performance price for that feature.
+Stay alert.\medskip
+
+{\em Java is statically and weakly typed.}
+
+Like C++, all Java variables are typed, and their type must be
+known at compile time. If necessary variables can be cast.\medskip
+
+{\em  Java objects are always passed by reference.}
+
+Java contains a few built-in types that are passed by value. However
+all objects are passed by value-references. Think of them as pointers
+that automatically dereferences themselves.\medskip
+
+{\em Java is polymorphic by default.}
+
+By default, all methods in a class are ``virtual''. Subclasses always
+override base class objects.\medskip
+
+{\em Java allows only single Inheritance and features Interfaces.}
+
+Only single inheritances are allowed. Interfaces in Java are similar
+to pure abstract base classes in C++.\medskip
+
+{\em Generics are done by type-erasure.}
+
+Java also supports Generic containers, similar to {\tt std::vector<>} or
+{\tt std::list<>} in C++. However, unlike C++, Java uses type-erasure to
+handle generics. In contrast, C++ uses type specialization.\medskip
+
+{\em Java supports reflection and introspection.}
+
+It is possible to ask a class to print out its supported methods,
+or look up a class by string, at runtime.\medskip
+
+{\em Have fun with Java.}
+
+Yep. Enjoy Coding!
+
 
 \end{document}

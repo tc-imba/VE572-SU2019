@@ -24,26 +24,23 @@
 \RequirePackage{cmbright}
 \RequirePackage[cm]{sfmath}
 
-\RequirePackage[colorlinks=true, breaklinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue]{hyperref}
+\RequirePackage[colorlinks=true, breaklinks=true, linkcolor=black!70, urlcolor=black!70, citecolor=black!80]{hyperref}
 
 % misc
 \RequirePackage{booktabs,multirow,multicol,varwidth}
 \RequirePackage{enumitem} 
-%\RequirePackage{enumerate} 
-\setlist{noitemsep}
+\setlist{itemsep=0cm,topsep=0cm}
+\setlength\multicolsep{.125cm}
 
 % cn
-%\RequirePackage{CJKutf8}
-%\newcommand{\cn}[1]{\begin{CJK}{UTF8}{gkai}#1\end{CJK}}
-%\newcommand{\cntitle}[1]{\cn{\Huge #1}}
 \RequirePackage{xeCJK}
 %\setCJKsansfont{WenQuanYi Zen Hei Sharp}
-%\setCJKsansfont{AR PL UKai TW MBE:style=Book}
-%\setCJKmainfont{AR PL UKai TW MBE:style=Book}
+\setCJKsansfont{AR PL UKai TW MBE:style=Book}
+\setCJKmainfont{AR PL UKai TW MBE:style=Book}
 
 % boxes
 \RequirePackage{tcolorbox}
-\tcbuselibrary{skins,raster}
+\tcbuselibrary{skins,raster,minted,listingsutf8,minted,xparse}
 
 % information
 \newcommand*{\subtitle}[1]{\gdef\@subtitle{#1}}
@@ -67,17 +64,56 @@
 \renewcommand{\maketitle}{
 \begin{tcbraster}[raster columns=2, raster equal height, raster column skip=.65cm,raster column skip=.75cm]
 \begin{tcolorbox}[colback=black!4!white,colframe=white!50!black]
-{\Large	{\bf \@title} \ifx\@instructor\empty\vspace{.75cm}\else\vspace{.15cm}\fi
+{\Large	{\bf \@title}} {\large \ifx\@instructor\empty\vspace{.75cm}\else\vspace{.15cm}\fi
 
-{ \it \@subtitle \quad \ifx\@date\@empty\else(\@date)\fi}}\\
+{ \it \@subtitle~---~\ifx\@semester\@empty\else\@semester\ \@year}}\\
 	\ifx\@instructor\empty\else Instructor:~\@instructor\\\fi 
-TA:~\@author\ ---\ \@institute\ \ifx\@semester\@empty\else(\@semester\ \@year)\fi
+TA:~\@author~(\@institute)\fi
 \end{tcolorbox}
 \begin{tcolorbox}[blanker,before skip=6pt,after skip=6pt,borderline west={3mm}{0pt}{black!65!white}]
 	\@blockinfo
 \end{tcolorbox}
 \end{tcbraster}	
 \par\bigskip
+}
+
+% boxes for code
+\newtcblisting{shbox}[1][sh]{
+	listing inputencoding=utf8,listing engine=listings,colback=black!88,coltext=white,colframe=red!60, left=2mm,top=.1cm, right=.1cm, bottom=.1cm,
+	listing only,listing options={style=tcblatex,language=sh},every listing line={\textcolor{blue!60}{\small\ttfamily\bfseries #1 \$ }}
+}
+
+\tcbset{
+	codebox/.style={
+		listing engine=minted,
+		fonttitle=\small,
+		fontlower=\small,
+		enhanced,left=1mm,top=.1cm, right=.1cm, bottom=.1cm,
+	},
+	filecbox/.style={
+		codebox, listing only,	left=1mm,top=.1cm, right=.1cm, bottom=.1cm, 
+%		minted options={fontsize=#1,linenos,numbersep=3mm,tabsize=2},
+		minted options={fontsize=#1,tabsize=2},
+		minted style=autumn,	fonttitle=\bf,coltitle=black!70, colback=yellow!3,colframe=yellow!60,coltext=black,
+	},
+	inlinecbox/.style={
+		codebox,listing only, left=1mm,top=.1cm, right=.1cm, bottom=.1cm,
+		minted options={fontsize=#1,tabsize=2},
+	},
+	doccbox/.style={
+		codebox,minted options={fontsize=#1,tabsize=2}
+	}
+}
+
+\DeclareTCBListing{inlinecbox}{ O{\small} m O{}}{
+	inlinecbox=#1,minted language=#2,minted style=monokai, colback=black!88,colframe=white,coltext=white,
+	%overlay={
+%		\begin{tcbclipinterior}\fill[white!25!black] (frame.south west)rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}
+%	}
+}
+
+\DeclareTCBInputListing{filecbox}{ O{\small} m m }{
+	filecbox=#1,title=#3,listing file={#3},	minted language=#2
 }
 
 \endinput
