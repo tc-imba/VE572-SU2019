@@ -1,0 +1,119 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{tadoc}[2018/09/16 TA documents]
+
+% gemoetry and spacing
+\RequirePackage[margin=2.25cm]{geometry}
+\RequirePackage{setspace}
+\onehalfspacing
+\setlength\parindent{0pt}
+
+% fonts and links
+\RequirePackage{fontspec}
+%\renewcommand{\familydefault}{\sfdefault}
+\setsansfont{cmunb}[        %CMU Bright for text
+    Extension=.otf,
+    UprightFont=*mr,
+    ItalicFont=*mo,
+    BoldFont=*bx, % semibold
+    BoldItalicFont=*so, % semibold oblique
+    NFSSFamily=cmbr
+    ]
+\setmainfont{CMU Bright}
+%\setmonofont{CMU Typewriter Text}
+\setmonofont[Scale=.8]{DejaVu Sans Mono}
+\RequirePackage{cmbright}
+\RequirePackage[cm]{sfmath}
+
+\RequirePackage[colorlinks=true, breaklinks=true, linkcolor=black!70, urlcolor=black!70, citecolor=black!80]{hyperref}
+
+% misc
+\RequirePackage{booktabs,multirow,multicol,varwidth}
+\RequirePackage{enumitem} 
+\setlist{itemsep=0cm,topsep=0cm}
+\setlength\multicolsep{.125cm}
+
+% cn
+%\RequirePackage{xeCJK}
+%\setCJKsansfont{WenQuanYi Zen Hei Sharp}
+%\setCJKsansfont{AR PL UKai TW MBE:style=Book}
+%\setCJKmainfont{AR PL UKai TW MBE:style=Book}
+
+% boxes
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins,raster,minted,listingsutf8,minted,xparse}
+
+% information
+\newcommand*{\subtitle}[1]{\gdef\@subtitle{#1}}
+\newcommand*{\@subtitle}{Subtitle}
+\newcommand*{\semester}[1]{\gdef\@semester{#1}\def\thesemester{\@semester}}
+\newcommand*{\@semester}{}
+\renewcommand*{\year}[1]{\gdef\@year{#1}}
+\newcommand*{\@year}{}
+\newcommand*{\institute}[1]{\gdef\@institute{#1}}
+\newcommand*{\@institute}{UM-JI}
+\newcommand*{\blockinfo}[1]{\gdef\@blockinfo{#1}}
+\newcommand*{\@blockinfo}{\hspace{.5cm}General information}
+\newcommand*{\instructor}[1]{\gdef\@instructor{#1}}
+\newcommand*{\@instructor}{\href{mailto:charlem@sjtu.edu.cn}{Manuel}}
+\newcommand{\noinstructor}{\renewcommand*{\@instructor}{}}
+\date{}
+
+
+% maketitle
+\newgeometry{margin=2cm,top=1.75cm}
+\renewcommand{\maketitle}{
+\begin{tcbraster}[raster columns=2, raster equal height, raster column skip=.65cm,raster column skip=.75cm]
+\begin{tcolorbox}[colback=black!4!white,colframe=white!50!black]
+{\Large	{\bf \@title}} {\large \ifx\@instructor\empty\vspace{.75cm}\else\vspace{.15cm}\fi
+
+{ \it \@subtitle~---~\ifx\@semester\@empty\else\@semester\ \@year}}\\
+	\ifx\@instructor\empty\else Instructor:~\@instructor\\\fi 
+TA:~\@author~(\@institute)\fi
+\end{tcolorbox}
+\begin{tcolorbox}[blanker,before skip=6pt,after skip=6pt,borderline west={3mm}{0pt}{black!65!white}]
+	\@blockinfo
+\end{tcolorbox}
+\end{tcbraster}	
+\par\bigskip
+}
+
+% boxes for code
+\newtcblisting{shbox}[1][sh]{
+	listing inputencoding=utf8,listing engine=listings,colback=black!88,coltext=white,colframe=red!60, left=2mm,top=.1cm, right=.1cm, bottom=.1cm,
+	listing only,listing options={style=tcblatex,language=sh},every listing line={\textcolor{blue!60}{\small\ttfamily\bfseries #1 \$ }}
+}
+
+\tcbset{
+	codebox/.style={
+		listing engine=minted,
+		fonttitle=\small,
+		fontlower=\small,
+		enhanced,left=1mm,top=.1cm, right=.1cm, bottom=.1cm,
+	},
+	filecbox/.style={
+		codebox, listing only,	left=1mm,top=.1cm, right=.1cm, bottom=.1cm, 
+%		minted options={fontsize=#1,linenos,numbersep=3mm,tabsize=2},
+		minted options={fontsize=#1,tabsize=2},
+		minted style=autumn,	fonttitle=\bf,coltitle=black!70, colback=yellow!3,colframe=yellow!60,coltext=black,
+	},
+	inlinecbox/.style={
+		codebox,listing only, left=1mm,top=.1cm, right=.1cm, bottom=.1cm,
+		minted options={fontsize=#1,tabsize=2},
+	},
+	doccbox/.style={
+		codebox,minted options={fontsize=#1,tabsize=2}
+	}
+}
+
+\DeclareTCBListing{inlinecbox}{ O{\small} m O{}}{
+	inlinecbox=#1,minted language=#2,minted style=monokai, colback=black!88,colframe=white,coltext=white,
+	%overlay={
+%		\begin{tcbclipinterior}\fill[white!25!black] (frame.south west)rectangle ([xshift=5mm]frame.north west);\end{tcbclipinterior}
+%	}
+}
+
+\DeclareTCBInputListing{filecbox}{ O{\small} m m }{
+	filecbox=#1,title=#3,listing file={#3},	minted language=#2
+}
+
+\endinput

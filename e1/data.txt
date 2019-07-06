@@ -1,0 +1,8 @@
+Ali,Han,Eve,Dan,Fin
+Han,Ali,Eve,Gil,Ben
+Ben,Han,Gil,Col
+Eve,Ali,Han
+Gil,Han,Ben,Dan
+Fin,Ali,Dan,Col
+Dan,Ali,Fin,Gil
+Col,Fin,Ben

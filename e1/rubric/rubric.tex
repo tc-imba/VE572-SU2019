@@ -1,0 +1,66 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{tadoc}
+
+\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage{xcolor}
+%\usepackage{graphicx}
+
+
+\usepackage{minted}
+\usemintedstyle{autumn}
+\setminted{linenos,breaklines,tabsize=4,xleftmargin=1.5em}
+
+\usepackage{dirtree}
+
+%\renewcommand{\multirowsetup}{\centering} 
+
+\usepackage{pdfpages}
+
+
+\title{VE572 --- Methods and Tools for Big Data}
+\subtitle{Midterm Rubric}
+\author{\href{mailto:liuyh615@sjtu.edu.cn}{Yihao} and \href{mailto:AuroraZYJ@sjtu.edu.cn}{Yanjun}}
+\semester{Summer}
+\year{2019}
+\blockinfo{
+	\begin{center}
+		\textbf{This document should be kept secret.}
+	\end{center}	
+}
+
+% whether or not to display the instructor line
+\noinstructor
+
+%\pagenumbering{gobble}
+
+\begin{document}
+
+\maketitle
+
+\section*{Exercise 2 --- MapReduce}
+
+\subsection*{1. Determine all the FOFs in the following toy example.}
+
+\inputminted{shell}{../data.txt}
+
+\subsection*{2. Write the Hadoop pseudocode
+for the first MapReduce Job. Assume a simple input text file
+with a list of names on each line, the user as first field followed by all his friends. For the
+output we expect a simple text file where each line is composed of a user and a FOF followed
+by the number of friends they have in common.}
+
+\inputminted{java}{../src/main/java/com/ve572/e1/FindFOF.java}
+
+\subsection*{3. Write the Hadoop pseudocode
+for the second MapReduce job. Assume the previous output
+file as input, and as output a simple text file where each line is composed of a user and all his
+FOF ordered with respect to the number of common friends; for each FOF also display the
+number of common friends.}
+
+
+\inputminted{java}{../src/main/java/com/ve572/e1/CountFOF.java}
+
+
+\end{document}
+
