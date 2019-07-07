@@ -38,109 +38,184 @@
 
 \maketitle
 
-\section*{Exercise 1 --- Big data or not big data?}
+\section*{Exercise 1 --- Big data or not big data? [20 marks]}
+
+This part will count at most 20 marks in total.
+
+\subsection*{1. What is the data size? [2.5+5=7.5 marks]}
+
 \begin{enumerate}
-	\item What is the data size?
-	\begin{enumerate}
-		\item 1G-10G: Spark without Hadoop
-		\item 10G-100G: Mapreduce with Hadoop
-		\item 100G+: Spark with Hadoop
-	\end{enumerate}
-	\item What is the data type?
-	\begin{enumerate}
-		\item Real time: Spark
-		\item Batch: Mapreduce
-	\end{enumerate}
-	\item What does the company want to do with the data?
-	\begin{enumerate}
-		\item Search: Drill
-		\item Implement algorithms: Spark
-	\end{enumerate}
+	\item 1G-10G: Spark without Hadoop
+	\item 10G-100G: Mapreduce with Hadoop
+	\item 100G+: Spark with Hadoop
 \end{enumerate}
 
+\subsection*{2. What is the data type? [2.5+5=7.5 marks]}
 
-\section*{Exercise 2 --- MapReduce}
+\begin{enumerate}
+	\item Real time: Spark
+	\item Batch: Mapreduce
+\end{enumerate}
 
-\subsection*{1. Determine all the FOFs in the following toy example.}
+\subsection*{3. What does the company want to do with the data? [2.5+5=7.5 marks]}
 
-\inputminted{shell}{../data.txt}
+\begin{enumerate}
+	\item Search: Drill
+	\item Implement algorithms: Spark
+\end{enumerate}
 
-\subsection*{2. Write the Hadoop pseudocode
-for the first MapReduce Job. Assume a simple input text file
-with a list of names on each line, the user as first field followed by all his friends. For the
-output we expect a simple text file where each line is composed of a user and a FOF followed
-by the number of friends they have in common.}
+\subsection*{4. Other reasonable answers [5 marks]}
+
+\section*{Exercise 2 --- MapReduce [40 marks]}
+
+\subsection*{1. Determine all the FOFs in the following toy example. [(2/3)*15=10 marks]}
+
+\inputminted{shell}{../fof.txt}
+
+\subsection*{2. Write the Hadoop pseudocode for the first MapReduce Job. Assume a simple input text file with a list of names on each line, the user as first field followed by all his friends. For the output we expect a simple text file where each line is composed of a user and a FOF followed by the number of friends they have in common. [15 marks]}
+
+\begin{itemize}
+\item The overall MapRuduce Structure [5 marks]
+\item The first MapReduce functionality [5 marks]
+\item The second MapReduce functionality [5 marks]
+\end{itemize}
 
 \inputminted{java}{../src/main/java/com/ve572/e1/FindFOF.java}
 
-\subsection*{3. Write the Hadoop pseudocode
-for the second MapReduce job. Assume the previous output
-file as input, and as output a simple text file where each line is composed of a user and all his
-FOF ordered with respect to the number of common friends; for each FOF also display the
-number of common friends.}
+\subsection*{3. Write the Hadoop pseudocode for the second MapReduce job. Assume the previous output file as input, and as output a simple text file where each line is composed of a user and all his FOF ordered with respect to the number of common friends; for each FOF also display the number of common friends. [15 marks]}
 
+\begin{itemize}
+\item The overall MapRuduce Structure [7.5 marks]
+\item The MapReduce functionality [7.5 marks]
+\end{itemize}
 
 \inputminted{java}{../src/main/java/com/ve572/e1/CountFOF.java}
 
-\section*{Exercise 3 --- Course questions}
-\subsection*{1 HDFS}
-\subsubsection*{a) What is the default replication level in HDFS?[1]}
+\section*{Exercise 3 --- Course questions [35 marks]}
+\subsection*{1. HDFS [15 marks]}
+\subsubsection*{a) What is the default replication level in HDFS? [1 mark]}
 The default replication factor is 3.
-\subsubsection*{b) Parallel is often seen as more efficient than serial. When writing a file in HDFS, blocks are first sent to a DataNode which forwards them to another, which sends them to another, and so on…Why is this process not parallelised, i.e. send blocks to all the DataNodes at the same time?[4]}
-If the blocks are sent to all the DataNodes at the same time, it will be slow due to the limited throughput.[2] Thus when writing a file in HDFS, the blocks are sent to a DataNode at a time. Once the blocks are written in a DataNode, it is no need to forward them to other DataNodes.[2]
+\subsubsection*{b) Parallel is often seen as more efficient than serial. When writing a file in HDFS, blocks are first sent to a DataNode which forwards them to another, which sends them to another, and so on…Why is this process not parallelised, i.e. send blocks to all the DataNodes at the same time? [4 marks]}
 
-\subsubsection*{c) Explain how to find a file in HDFS.[3]}
+\begin{itemize}
+\item If the blocks are sent to all the DataNodes at the same time, it will be slow due to the limited throughput. [2 marks]
+\item Thus when writing a file in HDFS, the blocks are sent to a DataNode at a time. Once the blocks are written in a DataNode, it is no need to forward them to other DataNodes. [2 marks]
+\end{itemize}
+
+\subsubsection*{c) Explain how to find a file in HDFS. [3 marks]}
 \begin{enumerate}
-	\item Each datanode announces the blocks it has. 
-	\item The namenode keeps all the information in its memory. 
-	\item When a write occurs an entry is added to the edit log.
+	\item Each datanode announces the blocks it has. [1 mark]
+	\item The namenode keeps all the information in its memory. [1 mark]
+	\item When a write occurs an entry is added to the edit log. [1 mark]
 \end{enumerate}
 
-\subsubsection*{d) What are the namespace image and edit log?[3]}
-Namespace image: Stroing the entire file system namespace,  including the mapping of blocks to files and file system properties.[1.5]\\
-Edit log: Recording every change that occurs to file system metadata, such as creating a new file in HDFS and changing the replication factor of a file.[1.5]
+\subsubsection*{d) What are the namespace image and edit log? [3 marks]}
 
-\subsubsection*{e) Is it possible to have several NameNodes in a cluster? If so explain how it works.[3]}
-It is possible.[0.5] We can use HDFS federation.[0.5] 
-\begin{enumerate}
-	\item Split the filesystem over several independent namenodes. Each namenode has a namespace and its own pool of blocks [1]
-	\item A namespace with a block pool is called namespace volume and a datanode is not attached to a specific namespace volume. [1]
-\end{enumerate}
+\begin{itemize}
+\item Namespace image: Stroing the entire file system namespace,  including the mapping of blocks to files and file system properties. [1.5 marks]
+\item Edit log: Recording every change that occurs to file system metadata, such as creating a new file in HDFS and changing the replication factor of a file. [1.5 marks]
+\end{itemize}
 
-\subsection*{2. YARN}
-\subsubsection*{a) Explain how an application is launched and run using YARN.[3]}
+
+
+\subsubsection*{e) Is it possible to have several NameNodes in a cluster? If so explain how it works. [4 marks]}
+
+\begin{itemize}
+\item It is possible. [1 mark]
+\item We can use HDFS federation. [1 mark] 
+\item Split the filesystem over several independent namenodes. Each namenode has a namespace and its own pool of blocks [1 mark]
+\item A namespace with a block pool is called namespace volume and a datanode is not attached to a specific namespace volume. [1 mark]
+\end{itemize}
+
+\subsection*{2. YARN [8 marks]}
+\subsubsection*{a) Explain how an application is launched and run using YARN. [3 marks]}
 \begin{enumerate}
 	\item Application client submit a YARN application to Resource Manager.
-	\item Resource Manager contacts Node Manager to launch a new container and run Application Master in it.[1]
-	\item Application Master asks Resource Manager for allocating the resources.[1]
-	\item Application manager gets the resources information from Resource Manager and it launches the container through other Node Manager.[1]
+	\item Resource Manager contacts Node Manager to launch a new container and run Application Master in it. [1 mark]
+	\item Application Master asks Resource Manager for allocating the resources. [1 mark]
+	\item Application manager gets the resources information from Resource Manager and it launches the container through other Node Manager. [1 mark]
 \end{enumerate}
 
-\subsubsection*{b) Would you recommend the fair or capacity scheduler? Explain the when and why.}
-Fair scheduling is a method of assigning resources to applications such that all apps get, on average, an equal share of resources over time.[1] It is a good default for small to medium sized clusters[0.5] since it is more flexible and allows for jobs to consume unused resources in the cluster.[1] \\
-Capacity scheduler is designed to run Hadoop applications as a shared, multi-tenant cluster in an operator-friendly manner while maximizing the throughput and the utilization of the cluster.[1] It's generally used on large clusters with lots of different workloads with different needs[0.5] since it can give each organization capacity guarantees.[1]
+\subsubsection*{b) Would you recommend the fair or capacity scheduler? Explain the when and why. [5 marks]}
+\begin{itemize}
+\item
+\begin{itemize}
+\item Fair scheduling is a method of assigning resources to applications such that all apps get, on average, an equal share of resources over time. [1 mark]
+\item It is a good default for small to medium sized clusters [0.5 mark]
+\item since it is more flexible and allows for jobs to consume unused resources in the cluster. [1 mark]
+\end{itemize}
+\item
+\begin{itemize}
+\item Capacity scheduler is designed to run Hadoop applications as a shared, multi-tenant cluster in an operator-friendly manner while maximizing the throughput and the utilization of the cluster. [1 mark]
+\item It's generally used on large clusters with lots of different workloads with different needs [0.5 mark]
+\item since it can give each organization capacity guarantees.[1 mark]
+\end{itemize}
+\end{itemize}
 
-\subsection*{3. Briefly explain the similarities and differences between MapReduce and Spark. [7]}
-Similarity: Both are highly scalable and can be used in a cluster.[1] 
-MapReduce: MapReduce takes two stages to process data, Map and Reduce. It reads and writes from disk and thus slower and has high latency.[1] It uses replication for fault tolerance, which significantly increase the completion times for operations with a single failure.[2]\\
-Spark: Spark is lightning fast cluster computing tool. It is much faster than MapReduce and has low-latency computing.[1] It uses RDDs and DAG for fault tolerance. If an RDD is lost, it is easy to recompute a new one by using the original transformations.[2]
+\subsection*{3. Briefly explain the similarities and differences between MapReduce and Spark. [7 marks]}
 
+\begin{itemize}
+\item Similarity: Both are highly scalable and can be used in a cluster. [1 mark]
+\item MapReduce: 
+\begin{itemize}
+\item MapReduce takes two stages to process data, Map and Reduce. It reads and writes from disk and thus slower and has high latency. [1 mark]
+\item It uses replication for fault tolerance, which significantly increase the completion times for operations with a single failure. [2 marks]
+\end{itemize}
+\item Spark: 
+\begin{itemize}
+\item
+Spark is lightning fast cluster computing tool. It is much faster than MapReduce and has low-latency computing. [1 mark] 
+\item
+It uses RDDs and DAG for fault tolerance. If an RDD is lost, it is easy to recompute a new one by using the original transformations. [2 marks]
+\end{itemize}
+\end{itemize}
 
-\subsection*{4. Drill}
-\subsubsection*{a) What is Zookeeper, and why is it a core component of Drill’s strategy?[2]}
-ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services.[1]\\
-Drill uses ZooKeeper to maintain cluster membership and health-check information.[1]
+\subsection*{4. Drill [5 marks]}
 
-\subsubsection*{b) Explain what is a Drillbit and how it functions.[3]}
-A Drillbit is the process running on each active Drill node that coordinates, plans, and executes queries, as well as distributes query work across the cluster to maximize data locality.[1]
+\subsubsection*{a) What is Zookeeper, and why is it a core component of Drill’s strategy? [2 marks]}
 
-The Drillbit receives the query from a client. A SQL parser in the DrillBit parses the SQL and form a logical plan.[0.5]
+\begin{itemize}
+\item ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. [1 mark]
+\item Drill uses ZooKeeper to maintain cluster membership and health-check information. [1 mark]
+\end{itemize}
 
-The Drillbit sends the logical plan into a optimizer to optimize and convert the logical plan into a physical plan that describes how to execute the query.[0.5]
+\subsubsection*{b) Explain what is a Drillbit and how it functions. [3 marks]}
 
-A parallelizer in the Drillbit transforms the physical plan into multiple phases, called major and minor fragments. [0.5]
+\begin{itemize}
+\item A Drillbit is the process running on each active Drill node that coordinates, plans, and executes queries, as well as distributes query work across the cluster to maximize data locality. [1 mark]
+\item The Drillbit receives the query from a client. A SQL parser in the DrillBit parses the SQL and form a logical plan. [0.5 mark]
+\item The Drillbit sends the logical plan into a optimizer to optimize and convert the logical plan into a physical plan that describes how to execute the query. [0.5 mark]
+\item A parallelizer in the Drillbit transforms the physical plan into multiple phases, called major and minor fragments.  [0.5 mark]
+\item These fragments create a multi-level execution tree that rewrites the query and executes it in parallel against the configured data sources, sending the results back to the client or application. [0.5 mark]
+\end{itemize}
 
-These fragments create a multi-level execution tree that rewrites the query and executes it in parallel against the configured data sources, sending the results back to the client or application.[0.5]
+\section*{Exercise 4 --- Simple Hadoop questions [5 marks]}
+
+\subsection*{1. Why is ssh needed on the master and workers? How to configure it? [1 mark]}
+\begin{itemize}
+\item The master uses ssh protocol to send commands to the workers. [0.5 mark]
+\item The worker should add the master's public key in ssh configurations. [0.5 mark]
+\end{itemize}
+
+\subsection*{Which Java version is needed by Hadoop, why? [1 mark]}
+\begin{itemize}
+\item Java version 8 is needed. [0.5 mark]
+\item Some APIs are deprecated in the new versions of Java and Hadoop hasn't altered them yet. [0.5 mark]
+\end{itemize}
+
+\subsection*{Why should Hadoop's home be the same across the whole cluster? [1 mark]}
+Because the master use the same configuration file to find the Hadoop's home on every worker.
+
+\subsection*{How to use \texttt{hdfs dfs} command line interface to [2 marks]}
+
+\subsubsection*{(i) list a directory [1 mark]}
+\texttt{hdfs dfs -ls <hdfs path>}
+
+\subsection*{(ii) upload or download a file [1 mark]}
+\begin{itemize}
+\item \texttt{hdfs dfs -put <local path> <hdfs path>} [0.5 mark]
+\item \texttt{hdfs dfs -get <hdfs path> <local path>} [0.5 mark]
+\end{itemize}
 
 
 \end{document}
