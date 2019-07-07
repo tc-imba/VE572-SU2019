@@ -1,5 +1,7 @@
 package com.ve572.e1;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -13,7 +15,8 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class CountFOF {
 
@@ -39,12 +42,15 @@ public class CountFOF {
         private Text resultValue = new Text();
 
         public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            ArrayList<String> arrayList = new ArrayList<>();
+            ArrayList<Pair<String, Integer>> arrayList = new ArrayList<>();
             for (Text val : values) {
-                arrayList.add(val.toString());
+                String[] arr = val.toString().split(" ");
+                arrayList.add(new ImmutablePair<>(arr[0], Integer.parseInt(arr[1])));
             }
-            Collections.sort(arrayList);
-            resultValue.set(String.join(", ", arrayList));
+            arrayList.sort(Comparator.comparing(Pair<String, Integer>::getValue).reversed());
+            resultValue.set(arrayList.stream().map(
+                    x -> x.getKey() + " " + x.getValue().toString()).collect(Collectors.joining(", "))
+            );
             context.write(key, resultValue);
         }
     }
