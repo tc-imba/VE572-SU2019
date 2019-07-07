@@ -75,9 +75,9 @@ This part will count at most 20 marks in total.
 \subsection*{2. Write the Hadoop pseudocode for the first MapReduce Job. Assume a simple input text file with a list of names on each line, the user as first field followed by all his friends. For the output we expect a simple text file where each line is composed of a user and a FOF followed by the number of friends they have in common. [15 marks]}
 
 \begin{itemize}
-\item The overall MapRuduce Structure [5 marks]
-\item The first MapReduce functionality [5 marks]
-\item The second MapReduce functionality [5 marks]
+\item The first MapReduce [5 marks]
+\item The second MapReduce [5 marks]
+\item The overall design [5 marks]
 \end{itemize}
 
 \inputminted{java}{../src/main/java/com/ve572/e1/FindFOF.java}
@@ -85,8 +85,8 @@ This part will count at most 20 marks in total.
 \subsection*{3. Write the Hadoop pseudocode for the second MapReduce job. Assume the previous output file as input, and as output a simple text file where each line is composed of a user and all his FOF ordered with respect to the number of common friends; for each FOF also display the number of common friends. [15 marks]}
 
 \begin{itemize}
-\item The overall MapRuduce Structure [7.5 marks]
-\item The MapReduce functionality [7.5 marks]
+\item Mapper [5 marks]
+\item Reducer [10 marks]
 \end{itemize}
 
 \inputminted{java}{../src/main/java/com/ve572/e1/CountFOF.java}
