@@ -46,8 +46,7 @@ This part will count at most 20 marks in total.
 
 \begin{enumerate}
 	\item 1G-10G: Spark without Hadoop
-	\item 10G-100G: Mapreduce with Hadoop
-	\item 100G+: Spark with Hadoop
+	\item 10G+: With Hadoop
 \end{enumerate}
 
 \subsection*{2. What is the data type? [2.5+5=7.5 marks]}
@@ -99,7 +98,7 @@ The default replication factor is 3.
 
 \begin{itemize}
 \item If the blocks are sent to all the DataNodes at the same time, it will be slow due to the limited throughput. [2 marks]
-\item Thus when writing a file in HDFS, the blocks are sent to a DataNode at a time. Once the blocks are written in a DataNode, it is no need to forward them to other DataNodes. [2 marks]
+\item Thus when writing a file in HDFS, the blocks are sent to a DataNode at a time. Once the blocks are written in a DataNode, it is no need to also send them to other DataNodes. The datanode which just received them will forward them to another one which in turn will also forward them, and so on until the replication level is reached. [2 marks]
 \end{itemize}
 
 \subsubsection*{c) Explain how to find a file in HDFS. [3 marks]}
@@ -112,8 +111,8 @@ The default replication factor is 3.
 \subsubsection*{d) What are the namespace image and edit log? [3 marks]}
 
 \begin{itemize}
-\item Namespace image: Stroing the entire file system namespace,  including the mapping of blocks to files and file system properties. [1.5 marks]
-\item Edit log: Recording every change that occurs to file system metadata, such as creating a new file in HDFS and changing the replication factor of a file. [1.5 marks]
+\item The edit log is composed of 1 file per "command/instruction". [1.5 marks]
+\item The namespace image is a "merge edit log". This merging is performed "offline" (second/backup namenode or or with an nfs share). [1.5 marks]
 \end{itemize}
 
 
@@ -121,10 +120,9 @@ The default replication factor is 3.
 \subsubsection*{e) Is it possible to have several NameNodes in a cluster? If so explain how it works. [4 marks]}
 
 \begin{itemize}
-\item It is possible. [1 mark]
-\item We can use HDFS federation. [1 mark] 
-\item Split the filesystem over several independent namenodes. Each namenode has a namespace and its own pool of blocks [1 mark]
-\item A namespace with a block pool is called namespace volume and a datanode is not attached to a specific namespace volume. [1 mark]
+\item It is possible with HDFS federation. [1 mark] 
+\item Split the filesystem over several independent namenodes. Each namenode has a namespace and its own pool of blocks. A namespace with a block pool is called namespace volume and a datanode is not attached to a specific namespace volume. [1 mark]
+\item Namenodes are not attached to specific computer nodes. If a namenode goes done, the whole cluster remains accessible as all nodes can be accessed or run tasks (with data from other namenodes) which means a namenode dies all datanodes can be used (by other namenodes) so no lose of computational power. [2 mark]
 \end{itemize}
 
 \subsection*{2. YARN [8 marks]}
@@ -142,7 +140,7 @@ The default replication factor is 3.
 \begin{itemize}
 \item Fair scheduling is a method of assigning resources to applications such that all apps get, on average, an equal share of resources over time. [1 mark]
 \item It is a good default for small to medium sized clusters [0.5 mark]
-\item since it is more flexible and allows for jobs to consume unused resources in the cluster. [1 mark]
+\item It allows premption which might waste time recomputing killed tasks but can fully achieve 100\% cluster usage. This leads to some delay if the cluster is heavily loaded. [1 mark]
 \end{itemize}
 \item
 \begin{itemize}
@@ -164,9 +162,10 @@ The default replication factor is 3.
 \item Spark: 
 \begin{itemize}
 \item
-Spark is lightning fast cluster computing tool. It is much faster than MapReduce and has low-latency computing. [1 mark] 
+Spark is a generalisation of mapreduce (mapreduce somehow is also
+transforming things). [1 mark] 
 \item
-It uses RDDs and DAG for fault tolerance. If an RDD is lost, it is easy to recompute a new one by using the original transformations. [2 marks]
+With the concept of DAG and RDD Spark adds much flexibility. It uses RDDs and DAG for fault tolerance. If an RDD is lost, it is easy to recompute a new one by using the original transformations. [2 marks]
 \end{itemize}
 \end{itemize}
 
