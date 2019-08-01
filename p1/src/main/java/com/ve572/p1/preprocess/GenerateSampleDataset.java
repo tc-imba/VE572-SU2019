@@ -64,7 +64,7 @@ public class GenerateSampleDataset {
         for (String trackId : trackSet) {
             String newAvroFile = "/msd/" + trackId.charAt(3) + "/" + trackId.charAt(4) + ".avro";
             String millionSongPath = "/" + trackId.charAt(3) + "/" + trackId.charAt(4)
-                    + "/" + trackId.charAt(5) + trackId + ".h5";
+                    + "/" + trackId.charAt(5) + "/" + trackId + ".h5";
             if (!avroFile.equals(newAvroFile)) {
 //                System.out.println(trackId + " " + newAvroFile);
 
