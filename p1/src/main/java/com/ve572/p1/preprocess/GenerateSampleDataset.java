@@ -1,5 +1,6 @@
 package com.ve572.p1.preprocess;
 
+import org.apache.avro.file.DataFileStream;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.commons.io.IOUtils;
@@ -11,6 +12,7 @@ import org.apache.hadoop.fs.Path;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -55,25 +57,43 @@ public class GenerateSampleDataset {
 
         String avroFile = "";
         InputStream inputStream = null;
+        HashMap<String, MillionSong> songHashMap = new HashMap<>();
 
         Integer avroNumber = 0;
+        Integer foundNumber = 0;
         for (String trackId : trackSet) {
             String newAvroFile = "/msd/" + trackId.charAt(3) + "/" + trackId.charAt(4) + ".avro";
+            String millionSongPath = "/" + trackId.charAt(3) + "/" + trackId.charAt(4)
+                    + "/" + trackId.charAt(5) + trackId + ".h5";
             if (!avroFile.equals(newAvroFile)) {
-                System.out.println(trackId + " " + newAvroFile);
+//                System.out.println(trackId + " " + newAvroFile);
 
                 if (inputStream != null) inputStream.close();
+                songHashMap.clear();
+
                 avroFile = newAvroFile;
                 ++avroNumber;
+
                 try {
                     inputStream = hdfs.open(new Path(avroFile));
+                    DataFileStream<MillionSong> dataFileReader = new DataFileStream<>(inputStream, datumReader);
+                    for (MillionSong song : dataFileReader) {
+                        songHashMap.put(song.getFilename().toString(), song);
+                    }
                 } catch (IOException exception) {
                     System.err.println("error: " + avroFile + " not found!");
                 }
 
             }
+            MillionSong song = songHashMap.get(millionSongPath);
+            if (song != null) {
+                System.out.println(song.getFilename().toString() + " " + song.getChecksum().toString());
+                ++foundNumber;
+            } else {
+                System.out.println(millionSongPath + " not found!");
+            }
         }
-        System.out.println(avroNumber.toString());
+        System.out.println("found: " + foundNumber.toString() + "/" + ((Integer) trackSet.size()).toString());
     }
 
     public static void main(String[] args) throws Exception {

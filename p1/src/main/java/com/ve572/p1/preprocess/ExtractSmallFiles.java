@@ -35,7 +35,7 @@ public class ExtractSmallFiles {
                 outputStream.write(bytes);
                 String checkSum = CheckSum.getSHA1(bytes);
                 outputStream.close();
-                System.out.println(millionSongPath.toString() + " " + checkSum + " " + millionSong.getChecksum());
+                System.out.println(millionSong.getFilename().toString() + " " + checkSum + " " + millionSong.getChecksum());
             }
         } catch (IOException e) {
             e.printStackTrace();
