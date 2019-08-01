@@ -1,8 +1,12 @@
 package com.ve572.p1.preprocess;
 
+import org.apache.avro.file.CodecFactory;
 import org.apache.avro.file.DataFileStream;
+import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumReader;
+import org.apache.avro.io.DatumWriter;
 import org.apache.avro.specific.SpecificDatumReader;
+import org.apache.avro.specific.SpecificDatumWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -52,6 +56,11 @@ public class GenerateSampleDataset {
         FileSystem hdfs = FileSystem.get(new URI(NAME_NODE), conf);
 
         DatumReader<MillionSong> datumReader = new SpecificDatumReader<>(MillionSong.class);
+        DatumWriter<MillionSong> datumWriter = new SpecificDatumWriter<>(MillionSong.class);
+
+        DataFileWriter<MillionSong> dataFileWriter = new DataFileWriter<>(datumWriter);
+        dataFileWriter.setCodec(CodecFactory.snappyCodec());
+        dataFileWriter.create(new MillionSong().getSchema(), new File(filePath));
 
         System.out.println("total: " + ((Integer) trackSet.size()).toString() + " tracks");
 
@@ -80,6 +89,7 @@ public class GenerateSampleDataset {
                     for (MillionSong song : dataFileReader) {
                         songHashMap.put(song.getFilename().toString(), song);
                     }
+                    dataFileReader.close();
                 } catch (IOException exception) {
                     System.err.println("error: " + avroFile + " not found!");
                 }
@@ -88,11 +98,13 @@ public class GenerateSampleDataset {
             MillionSong song = songHashMap.get(millionSongPath);
             if (song != null) {
                 System.out.println(song.getFilename().toString() + " " + song.getChecksum().toString());
+                dataFileWriter.append(song);
                 ++foundNumber;
             } else {
                 System.out.println(millionSongPath + " not found!");
             }
         }
+        dataFileWriter.close();
         System.out.println("found: " + foundNumber.toString() + "/" + ((Integer) trackSet.size()).toString());
     }
 
