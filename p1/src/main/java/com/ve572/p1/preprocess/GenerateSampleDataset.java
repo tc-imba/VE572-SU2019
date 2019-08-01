@@ -18,7 +18,7 @@ import com.ve572.p1.preprocess.avro.MillionSong;
 
 public class GenerateSampleDataset {
 
-    private static final String NAME_NODE = "hdfs://localhost:8066";
+    private static final String NAME_NODE = "hdfs://hadoop-master:9000";
     private SortedSet<String> trackSet = new TreeSet<>();
 
     public void readTrackIds(String filePath) throws IOException {
