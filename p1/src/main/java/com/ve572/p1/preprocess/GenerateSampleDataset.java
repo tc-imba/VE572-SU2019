@@ -15,6 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.ve572.p1.preprocess.avro.MillionSong;
+import org.apache.hadoop.ipc.RemoteException;
 
 public class GenerateSampleDataset {
 
@@ -65,8 +66,11 @@ public class GenerateSampleDataset {
                 if (inputStream != null) inputStream.close();
                 avroFile = newAvroFile;
                 ++avroNumber;
-
-                inputStream = hdfs.open(new Path(avroFile));
+                try {
+                    inputStream = hdfs.open(new Path(avroFile));
+                } catch (RemoteException exception) {
+                    System.err.println("error: " + avroFile + " not found!");
+                }
 
             }
         }
