@@ -9,8 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.google.common.io.ByteStreams;
 import com.ve572.p1.preprocess.avro.MillionSong;
-import com.ve572.p1.preprocess.CheckSum;
 import org.apache.avro.file.CodecFactory;
 import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.io.DatumWriter;
@@ -39,7 +39,7 @@ public class CompactSmallFiles {
                     millionSong.setFilename(filename);
                     // read and set filecontent
                     InputStream inputStream = new FileInputStream(fileEntry);
-                    byte[] bytes = inputStream.readAllBytes();
+                    byte[] bytes = ByteStreams.toByteArray(inputStream);
                     ByteBuffer buffer = ByteBuffer.wrap(bytes);
                     millionSong.setFilecontent(buffer);
                     // set sha-1

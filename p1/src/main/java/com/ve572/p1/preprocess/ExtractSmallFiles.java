@@ -44,7 +44,7 @@ public class ExtractSmallFiles {
     }
 
     public static void main(String[] args) throws Exception {
-        DeSerializeDirectory("data3", "A.A.avro");
+        DeSerializeDirectory("h5data", "avrodata/A/B.avro");
     }
 
 
